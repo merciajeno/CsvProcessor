@@ -112,8 +112,19 @@ public class CsvParserService {
 
 	private int processCSVRecord(JobAudit job,CSVRecord record) {
 		int failed_records=0;
-		String zipcode = record.get("zipcode");
+		String zipcode = record.get("zipcode");//important field
+		String email = record.get("email");// important field
 		//System.out.println(zipcode);
+
+		 JobError error = new JobError();
+		 error.setJobAudit(job);
+		 error.setRowNumber(record.getRecordNumber());
+		try
+		{
+		if(!email.contains("@"))
+		{
+			throw new RuntimeException("Not a valid email");
+		}
 		  if(zipcode.length()==5)
 		  {// for US zipcode
 			zipService.zipDetails(zipcode);
@@ -121,7 +132,7 @@ public class CsvParserService {
 			        .orElseThrow(() ->
 			                new RuntimeException("Address not found: " + zipcode)
 			        );
-			String email = record.get("email");
+			
 			Optional<UserRecord> existingUser = userRepo.findByEmail(email);
 			if(existingUser.isEmpty())
 			{
@@ -147,13 +158,18 @@ public class CsvParserService {
 			// errorDto.setErrorMessage("Zipcode not found");
 			  failed_records++;
 			
-			 JobError error = new JobError();
-			 error.setJobAudit(job);
-			 error.setRowNumber(record.getRecordNumber());
+			 
 			 error.setErrorMessage("Zipcode is invalid");
 			 jobErrorRepo.save(error);
 			 
 		  }
+		}
+		catch(RuntimeException r)
+		{
+			failed_records++;
+			error.setErrorMessage(r.getMessage());
+			jobErrorRepo.save(error);
+		}
 		  return failed_records;
 	}
 }
