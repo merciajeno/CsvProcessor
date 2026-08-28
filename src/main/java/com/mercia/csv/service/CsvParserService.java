@@ -143,6 +143,7 @@ public class CsvParserService {
 			    
 
 			    user.setAddress(address);
+			    user.setJobAudit(job);
 		       // address.addUser(user);
 			    
 			    userRepo.save(user);

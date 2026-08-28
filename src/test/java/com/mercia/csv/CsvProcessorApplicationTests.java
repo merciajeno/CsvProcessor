@@ -74,6 +74,7 @@ class CsvProcessorApplicationTests {
 	    @Test
 	    void testWithMissingColumns()
 	    {
+	    	//zipcode  is missing
 	    	String csv = """
 	    	        firstName,lastName,phone1,phone2,email,web
 	    	        John,Doe,9876543210,9123456780,john@example.com,https://example.com
