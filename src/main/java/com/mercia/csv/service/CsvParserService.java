@@ -52,6 +52,9 @@ public class CsvParserService {
 		this.zipService=zipService;
 		
 	}
+	public CsvParserService() {
+		// TODO Auto-generated constructor stub
+	}
 	//email regex
 	private static final String EMAIL_REGEX = 
 	        "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
@@ -65,6 +68,11 @@ public class CsvParserService {
 	        return matcher.matches();
 	    }
 
+	 public static boolean isValidZipcode(String zipcode)
+	 {
+		 if(zipcode.length()!=5)return false;
+		 return zipcode.matches("[0-9]+");
+	 }
 	public int processCSV(JobAudit job,InputStream fileInput)// here the csv is processed
 	{
 	
@@ -135,7 +143,7 @@ public class CsvParserService {
 		{
 			throw new RuntimeException("Not a valid email");
 		}
-		  if(zipcode.length()==5)
+		  if(isValidZipcode(zipcode))
 		  {// for US zipcode
 			zipService.zipDetails(zipcode);
 			Address address = addressRepo.findById(zipcode)
