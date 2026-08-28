@@ -22,6 +22,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -50,8 +52,19 @@ public class CsvParserService {
 		this.zipService=zipService;
 		
 	}
-	
-	
+	//email regex
+	private static final String EMAIL_REGEX = 
+	        "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+	 private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+	 
+	 public static boolean isValidEmail(String email) {
+	        if (email == null) {
+	            return false;
+	        }
+	        Matcher matcher = EMAIL_PATTERN.matcher(email);
+	        return matcher.matches();
+	    }
+
 	public int processCSV(JobAudit job,InputStream fileInput)// here the csv is processed
 	{
 	
@@ -118,7 +131,7 @@ public class CsvParserService {
 		 error.setRowNumber(record.getRecordNumber());
 		try
 		{
-		if(!email.contains("@"))// not a right way 
+		if(!isValidEmail(email))// not a right way 
 		{
 			throw new RuntimeException("Not a valid email");
 		}
