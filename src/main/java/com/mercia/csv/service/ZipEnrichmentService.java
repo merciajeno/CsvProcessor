@@ -2,7 +2,7 @@ package com.mercia.csv.service;
 
 import java.util.concurrent.TimeUnit;
 
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +22,7 @@ import reactor.core.publisher.Mono;
 @Service
 public class ZipEnrichmentService {
 
+	@Autowired
 	private final AddressRepository addressRepo;
 //	private final RestClient restClient = RestClient.builder()
 //            .baseUrl("https://api.zippopotam.us/us")

@@ -33,9 +33,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class CsvParserService {
 
-	private final ErrorDto errorDto;
+	@Autowired
 	private ZipEnrichmentService zipService;
-	private final UploadResponseDto uploadResponseDto;
 	
 	@Autowired
 	private UserRepository userRepo;
@@ -46,11 +45,10 @@ public class CsvParserService {
 	@Autowired
 	private JobErrorRepository jobErrorRepo;
 	
-	public CsvParserService(ZipEnrichmentService zipService, ErrorDto errorDto,UploadResponseDto uploadResponseDto)
+	public CsvParserService(ZipEnrichmentService zipService)
 	{
 		this.zipService=zipService;
-		this.errorDto = errorDto;
-		this.uploadResponseDto = uploadResponseDto;
+		
 	}
 	
 	
@@ -101,7 +99,6 @@ public class CsvParserService {
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-			errorDto.setErrorMessage(e1.getMessage());
 			System.out.println(e1.getMessage());
 			
 		}
@@ -121,7 +118,7 @@ public class CsvParserService {
 		 error.setRowNumber(record.getRecordNumber());
 		try
 		{
-		if(!email.contains("@"))
+		if(!email.contains("@"))// not a right way 
 		{
 			throw new RuntimeException("Not a valid email");
 		}

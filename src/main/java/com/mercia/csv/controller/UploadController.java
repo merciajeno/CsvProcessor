@@ -26,34 +26,36 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class UploadController {
 
 //	private CsvParserService csvParserService;
+	
 	private UploadResponseDto uploadResponseDto;
 	
-	@Autowired
+
 	private JobService jobService;
 	
+	private final CsvFileValidator csvFileValidator;
 	
-	public UploadController(UploadResponseDto uploadResponseDto)
+	public UploadController(UploadResponseDto uploadResponseDto,JobService jobService,CsvFileValidator csvFileValidator)
 	{
 		
 		this.uploadResponseDto = uploadResponseDto;
+		this.jobService = jobService;
+		this.csvFileValidator = csvFileValidator;
 	}
 	
-	public UploadController() {
-		// TODO Auto-generated constructor stub
-	}
-
 	@PostMapping(value= "/upload")
 	public ResponseEntity<UploadResponseDto> uploadCSV(@RequestParam("file") MultipartFile file) {
 		// if no file is uploaded
 		JobAudit job = jobService.createJob();
 		try
 		{
-		
-		if(file.isEmpty()) throw new RuntimeException("File not found");
-		//System.out.println(file.getContentType());
-		
-		//if file is in csv
-		if(!file.getContentType().equals("text/csv")) throw new RuntimeException("Not in csv format");
+//		
+//		if(file.isEmpty()) throw new RuntimeException("File not found");
+//		//System.out.println(file.getContentType());
+//		
+//		//if file is in csv
+//		if(!file.getContentType().equals("text/csv")) throw new RuntimeException("Not in csv format");
+			if(!csvFileValidator.isValid(file))
+			   throw new RuntimeException("Invalid csv file");
 		
 //		try {
 //			System.out.println("File input");

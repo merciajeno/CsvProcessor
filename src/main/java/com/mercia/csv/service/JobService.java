@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,7 +16,10 @@ import com.mercia.csv.repository.JobRepository;
 @Service
 public class JobService {
 
+	@Autowired
 	private final JobRepository jobRepository;
+	
+	@Autowired
 	private CsvParserService csvParserService;
 
     public JobService(JobRepository jobRepository,CsvParserService csvParserService) {
