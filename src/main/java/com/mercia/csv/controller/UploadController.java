@@ -38,6 +38,10 @@ public class UploadController {
 		this.uploadResponseDto = uploadResponseDto;
 	}
 	
+	public UploadController() {
+		// TODO Auto-generated constructor stub
+	}
+
 	@PostMapping(value= "/upload")
 	public ResponseEntity<UploadResponseDto> uploadCSV(@RequestParam("file") MultipartFile file) {
 		// if no file is uploaded
