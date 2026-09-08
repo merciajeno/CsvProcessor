@@ -75,6 +75,7 @@ public class UploadController {
 				uploadResponseDto.setMessage("File not accepted");
 				return ResponseEntity.badRequest().body(uploadResponseDto);
 		}
+	//	System.out.println(job.getId());
 	   jobService.processJob(file, job.getId());
 		uploadResponseDto.setJobId(job.getId());
 		

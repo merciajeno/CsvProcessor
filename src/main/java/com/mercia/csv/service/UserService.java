@@ -44,5 +44,10 @@ public class UserService {
 
             userRepo.save(user);
         }
+        else
+        {
+        	existingUser.get().setJobAudit(job);
+        	userRepo.save(existingUser.get());
+        }
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mercia.csv.entities.JobAudit;
 import com.mercia.csv.entities.JobError;
 import com.mercia.csv.entities.StatusEnum;
+import com.mercia.csv.entities.UserRecord;
 import com.mercia.csv.repository.JobRepository;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,5 +45,17 @@ public class JobController {
 			 return ResponseEntity.notFound().build();
 		 }
 		 return ResponseEntity.ok().body(job.getStatus());
+	}
+	
+	@GetMapping("/user-records/{jobId}")
+	public ResponseEntity<List<UserRecord>> getUserRecords(@PathVariable Long jobId)
+	{
+		JobAudit job = jobRepo.findById(jobId).orElse(null);
+		 if(job==null)
+		 {
+			 return ResponseEntity.notFound().build();
+		 }
+		 return ResponseEntity.ok().body(job.getUserRecords());
+		
 	}
 }
