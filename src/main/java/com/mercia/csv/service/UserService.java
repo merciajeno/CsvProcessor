@@ -9,7 +9,7 @@ import com.mercia.csv.entities.Address;
 import com.mercia.csv.entities.JobAudit;
 import com.mercia.csv.entities.UserRecord;
 import com.mercia.csv.repository.UserRepository;
-
+//service to persist the successful user record 
 @Service
 public class UserService {
 

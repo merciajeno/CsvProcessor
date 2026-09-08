@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.mercia.csv.entities.Address;
 import com.mercia.csv.repository.AddressRepository;
-
+// a service to fetch address
 @Service
 public class AddressService {
 

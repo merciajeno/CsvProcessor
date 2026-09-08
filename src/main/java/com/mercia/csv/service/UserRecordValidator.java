@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Service;
-
+//validate the record based on email and zipcode
 @Service
 public class UserRecordValidator {
 
