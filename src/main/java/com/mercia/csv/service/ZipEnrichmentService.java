@@ -22,8 +22,8 @@ import reactor.core.publisher.Mono;
 @Service
 public class ZipEnrichmentService {
 
-	@Autowired
-	private final AddressRepository addressRepo;
+	private final AddressPersistService addressService;
+
 //	private final RestClient restClient = RestClient.builder()
 //            .baseUrl("https://api.zippopotam.us/us")
 //            .build();
@@ -35,8 +35,9 @@ public class ZipEnrichmentService {
 	private final WebClient webClient = WebClient.builder()
 			.baseUrl("https://api.zippopotam.us/us").build();
 
-	ZipEnrichmentService(AddressRepository addressRepo) {
-		this.addressRepo = addressRepo;
+	ZipEnrichmentService( AddressPersistService addressService) {
+	
+		this.addressService = addressService;
 	}
 
 	public void zipDetails(String zipcode) {
@@ -54,25 +55,26 @@ public class ZipEnrichmentService {
 	            .block();
 
 	    try {
-	        ObjectMapper objectMapper = new ObjectMapper();
-
-	        JsonNode json = objectMapper.readTree(result);
-
-	        String state = json.get("places")
-	                .get(0)
-	                .get("state")
-	                .asText();
-
-	        String place = json.get("places")
-	                .get(0)
-	                .get("place name")
-	                .asText();
-            
-	        cache.put(zipcode, place);
-
-	        addressRepo.save(
-	                new Address(zipcode, place, state)
-	        );
+//	        ObjectMapper objectMapper = new ObjectMapper();
+//
+//	        JsonNode json = objectMapper.readTree(result);
+//
+//	        String state = json.get("places")
+//	                .get(0)
+//	                .get("state")
+//	                .asText();
+//
+//	        String place = json.get("places")
+//	                .get(0)
+//	                .get("place name")
+//	                .asText();
+//            
+//	        cache.put(zipcode, place);
+//
+//	        addressRepo.save(
+//	                new Address(zipcode, place, state)
+//	        );
+	    	addressService.saveAddress(result, zipcode, cache);
 
 	    } catch (JsonProcessingException e) {
 	        throw new RuntimeException(e);
