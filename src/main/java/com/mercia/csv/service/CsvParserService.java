@@ -1,13 +1,9 @@
 package com.mercia.csv.service;
 
-import com.mercia.csv.dto.UploadResponseDto;
 import com.mercia.csv.entities.Address;
 import com.mercia.csv.entities.JobAudit;
 import com.mercia.csv.entities.JobError;
-import com.mercia.csv.entities.UserRecord;
-import com.mercia.csv.repository.AddressRepository;
 import com.mercia.csv.repository.JobErrorRepository;
-import com.mercia.csv.repository.UserRepository;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,20 +11,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,19 +34,20 @@ public class CsvParserService {
 //	@Autowired
 //	private AddressRepository addressRepo;
 //	
-	@Autowired
-	private JobErrorRepository jobErrorRepo;
+	private final JobErrorRepository jobErrorRepo;
 	
-	@Autowired
-	private UserService userService;
+	private final UserService userService;
 	
-	@Autowired
-	private AddressService addressService;
+	private final AddressService addressService;
 	
-	@Autowired
-	private UserRecordValidator validator;
+	private final UserRecordValidator validator;
 	
-	public CsvParserService() {
+	public CsvParserService(JobErrorRepository jobErrorRepo, UserRecordValidator validator, AddressService addressService,UserService userService) {
+		this.jobErrorRepo = jobErrorRepo;
+		this.userService = userService;
+		this.validator = validator;
+		this.addressService = addressService;
+		
 		// TODO Auto-generated constructor stub
 	}
 	//email regex

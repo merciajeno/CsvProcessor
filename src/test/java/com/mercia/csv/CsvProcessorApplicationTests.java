@@ -17,7 +17,7 @@ class CsvProcessorApplicationTests {
 
 	 private final CsvFileValidator validator = new CsvFileValidator();
 	 
-	 private final CsvParserService csvParserService = new CsvParserService();
+
 
 	 private final UserRecordValidator v = new UserRecordValidator();
 	    @Test
