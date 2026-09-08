@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import com.mercia.csv.controller.CsvFileValidator;
 import com.mercia.csv.service.CsvParserService;
+import com.mercia.csv.service.UserRecordValidator;
 
 
 @SpringBootTest
@@ -18,6 +19,7 @@ class CsvProcessorApplicationTests {
 	 
 	 private final CsvParserService csvParserService = new CsvParserService();
 
+	 private final UserRecordValidator v = new UserRecordValidator();
 	    @Test
 	    void testWithOtherFormat() {
 
@@ -75,7 +77,7 @@ class CsvProcessorApplicationTests {
 	    void validEmail()
 	    {
 	    	String email="hello@cred.ai";
-	    	assertTrue(csvParserService.isValidEmail(email));
+	    	assertTrue(v.isValidEmail(email));
 	    }
 	    
 	    
@@ -83,18 +85,18 @@ class CsvProcessorApplicationTests {
 	    void invalidEmail()
 	    {
 	    	String email="hello@cred";
-	    	assertFalse(csvParserService.isValidEmail(email));
+	    	assertFalse(v.isValidEmail(email));
 	    }
 	    
 	    @Test
 	    void validZipcode()
 	    {
-	    	assertTrue(csvParserService.isValidZipcode("12345"));
+	    	assertTrue(v.isValidZipcode("12345"));
 	    }
 	    
 	    @Test
 	    void invalidZipcode()
 	    {
-	    	assertFalse(csvParserService.isValidZipcode("@ui"));
+	    	assertFalse(v.isValidZipcode("@ui"));
 	    }
 }

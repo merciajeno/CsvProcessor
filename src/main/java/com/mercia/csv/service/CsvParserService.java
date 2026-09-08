@@ -34,44 +34,48 @@ import org.springframework.stereotype.Service;
 @Service
 public class CsvParserService {
 
-	@Autowired
-	private ZipEnrichmentService zipService;
-	
-	@Autowired
-	private UserRepository userRepo;
-	
-	@Autowired
-	private AddressRepository addressRepo;
-	
+//	@Autowired
+//	private ZipEnrichmentService zipService;
+//	
+//	@Autowired
+//	private UserRepository userRepo;
+//	
+//	@Autowired
+//	private AddressRepository addressRepo;
+//	
 	@Autowired
 	private JobErrorRepository jobErrorRepo;
 	
-	public CsvParserService(ZipEnrichmentService zipService)
-	{
-		this.zipService=zipService;
-		
-	}
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private AddressService addressService;
+	
+	@Autowired
+	private UserRecordValidator validator;
+	
 	public CsvParserService() {
 		// TODO Auto-generated constructor stub
 	}
 	//email regex
-	private static final String EMAIL_REGEX = 
-	        "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-	 private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
-	 
-	 public static boolean isValidEmail(String email) {
-	        if (email == null) {
-	            return false;
-	        }
-	        Matcher matcher = EMAIL_PATTERN.matcher(email);
-	        return matcher.matches();
-	    }
-
-	 public static boolean isValidZipcode(String zipcode)
-	 {
-		 if(zipcode.length()!=5)return false;
-		 return zipcode.matches("[0-9]+");
-	 }
+//	private static final String EMAIL_REGEX = 
+//	        "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+//	 private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+//	 
+//	 public static boolean isValidEmail(String email) {
+//	        if (email == null) {
+//	            return false;
+//	        }
+//	        Matcher matcher = EMAIL_PATTERN.matcher(email);
+//	        return matcher.matches();
+//	    }
+//
+//	 public static boolean isValidZipcode(String zipcode)
+//	 {
+//		 if(zipcode.length()!=5)return false;
+//		 return zipcode.matches("[0-9]+");
+//	 }
 	public int processCSV(JobAudit job,InputStream fileInput)// here the csv is processed
 	{
 	
@@ -138,36 +142,39 @@ public class CsvParserService {
 		 error.setRowNumber(record.getRecordNumber());
 		try
 		{
-		if(!isValidEmail(email))// not a right way 
+		if(!validator.isValidEmail(email))
 		{
 			throw new RuntimeException("Not a valid email");
 		}
-		  if(isValidZipcode(zipcode))
+		  if(validator.isValidZipcode(zipcode))
 		  {// for US zipcode
-			zipService.zipDetails(zipcode);
-			Address address = addressRepo.findById(zipcode)
-			        .orElseThrow(() ->
-			                new RuntimeException("Address not found: " + zipcode)
-			        );
+//			zipService.zipDetails(zipcode);
+//			Address address = addressRepo.findById(zipcode)
+//			        .orElseThrow(() ->
+//			                new RuntimeException("Address not found: " + zipcode)
+//			        );
+			  Address address = addressService.getAddress(zipcode);
 			
-			Optional<UserRecord> existingUser = userRepo.findByEmail(email);
-			if(existingUser.isEmpty())
-			{
-			    UserRecord user = new UserRecord(
-			            record.get("firstName"),
-			            record.get("lastName"),
-			            record.get("phone1"),
-			            record.get("phone2"),
-			            record.get("email"),
-			            record.get("web"));
-			    
-
-			    user.setAddress(address);
-			    user.setJobAudit(job);
-		       // address.addUser(user);
-			    
-			    userRepo.save(user);
-			}
+//			Optional<UserRecord> existingUser = userRepo.findByEmail(email);
+//			if(existingUser.isEmpty())
+//			{
+//			    UserRecord user = new UserRecord(
+//			            record.get("firstName"),
+//			            record.get("lastName"),
+//			            record.get("phone1"),
+//			            record.get("phone2"),
+//			            record.get("email"),
+//			            record.get("web"));
+//			    
+//
+//			    user.setAddress(address);
+//			    user.setJobAudit(job);
+//		       // address.addUser(user);
+//			    
+//			    userRepo.save(user);
+//			}
+			 
+			  userService.createIfNotExists(email, record, address, job);
 			}
 			
 		
