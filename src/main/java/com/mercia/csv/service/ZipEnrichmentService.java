@@ -2,6 +2,7 @@ package com.mercia.csv.service;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.mercia.csv.config.ApplicationConfiguration;
 import com.mercia.csv.entities.Address;
 import com.mercia.csv.repository.AddressRepository;
 
@@ -23,17 +25,25 @@ import reactor.core.publisher.Mono;
 public class ZipEnrichmentService {
 
 	private final AddressPersistService addressService;
+	
+	@Autowired
+	private ApplicationConfiguration config;
 
 //	private final RestClient restClient = RestClient.builder()
 //            .baseUrl("https://api.zippopotam.us/us")
 //            .build();
 //	
-	private final Cache<String, String> cache = Caffeine.newBuilder()
-            .maximumSize(200)
-            .expireAfterWrite(10, TimeUnit.MINUTES)
-            .build();
-	private final WebClient webClient = WebClient.builder()
-			.baseUrl("https://api.zippopotam.us/us").build();
+	@Autowired
+	private  Cache<String, String> cache ;
+	
+//			Caffeine.newBuilder()
+//            .maximumSize(200)
+//            .expireAfterWrite(10, TimeUnit.MINUTES)
+//            .build();
+	@Autowired
+	private  WebClient webClient ;
+//			WebClient.builder()
+//			.baseUrl("https://api.zippopotam.us/us").build();
 
 	ZipEnrichmentService( AddressPersistService addressService) {
 	
