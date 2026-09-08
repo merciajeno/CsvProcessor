@@ -1,6 +1,5 @@
 package com.mercia.csv.service;
 
-import com.mercia.csv.dto.ErrorDto;
 import com.mercia.csv.dto.UploadResponseDto;
 import com.mercia.csv.entities.Address;
 import com.mercia.csv.entities.JobAudit;
@@ -174,7 +173,7 @@ public class CsvParserService {
 		
 		  else
 		  {
-			// errorDto.setErrorMessage("Zipcode not found");
+			
 			  failed_records++;
 			
 			 
