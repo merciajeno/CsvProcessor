@@ -40,4 +40,4 @@ After starting the application, open:
 
 `http://localhost:8080/api-docs.html`
 
-You can use the documentation to explore the available APIs and test endpoints directly.
+You can use the documentation to explore the available APIs and test endpoints directly. I recommend to use Postman for api testing.
