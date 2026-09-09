@@ -42,6 +42,9 @@ public class CsvParserService {
 	
 	private final UserRecordValidator validator;
 	
+	@Autowired
+	private CSVFormat csvFormat;
+	
 	public CsvParserService(JobErrorRepository jobErrorRepo, UserRecordValidator validator, AddressService addressService,UserService userService) {
 		this.jobErrorRepo = jobErrorRepo;
 		this.userService = userService;
@@ -86,11 +89,12 @@ public class CsvParserService {
 //				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
-			CSVParser csvParser = CSVFormat.DEFAULT
-		    		.builder()
-		    		.setHeader()
-		    		.get()
-		    		.parse(reader);
+//			CSVParser csvParser = CSVFormat.DEFAULT
+//		    		.builder()
+//		    		.setHeader()
+//		    		.get()
+//		    		.parse(reader);
+			CSVParser csvParser = csvFormat.parse(reader);
 			int count = 0;
 			
 			//int total_records = csvParser.getRecords().size();

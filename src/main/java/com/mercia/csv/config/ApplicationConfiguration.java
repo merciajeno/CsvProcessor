@@ -2,6 +2,7 @@ package com.mercia.csv.config;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.csv.CSVFormat;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -26,5 +27,15 @@ public class ApplicationConfiguration {
 	            .maximumSize(200)
 	            .expireAfterWrite(10, TimeUnit.MINUTES)
 	            .build();
+	}
+	
+	@Bean
+	public CSVFormat csvFormat()
+	{
+		return CSVFormat.DEFAULT.builder()
+                .setHeader()
+                .setSkipHeaderRecord(true)
+                .setIgnoreEmptyLines(true)
+                .build();
 	}
 }
