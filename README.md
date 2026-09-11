@@ -40,4 +40,4 @@ After starting the application, open:
 
 `http://localhost:8080/api-docs.html`
 
-You can use the documentation to explore the available APIs and test endpoints directly. For API testing, I recommend Postman, since the Swagger endpoint doesn't support multipart file input.
+You can use the documentation to explore the available APIs and test endpoints directly. For API testing, I recommend Postman, since Swagger doesn't support multipart file input.
