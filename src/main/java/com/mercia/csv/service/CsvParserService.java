@@ -16,6 +16,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Service;
 
+import com.mercia.csv.dto.CsvResult;
 import com.mercia.csv.entities.Address;
 import com.mercia.csv.entities.JobAudit;
 import com.mercia.csv.entities.JobError;
@@ -35,19 +36,22 @@ public class CsvParserService {
 	
 	private final CSVFormat csvFormat;
 	
-	public CsvParserService(JobErrorRepository jobErrorRepo, UserRecordValidator validator, AddressService addressService, UserService userService, CSVFormat csvFormat) {
+	private final CsvResult csvResult;
+	
+	public CsvParserService(JobErrorRepository jobErrorRepo, UserRecordValidator validator, AddressService addressService, UserService userService, CSVFormat csvFormat, CsvResult csvResult) {
 		this.jobErrorRepo = jobErrorRepo;
 		this.userService = userService;
 		this.validator = validator;
 		this.addressService = addressService;
 		this.csvFormat = csvFormat;
+		this.csvResult = csvResult;
 		
 		// TODO Auto-generated constructor stub
 	}
 	
-    public int totalRecords(InputStream fileInput)
+    public int totalRecords(BufferedReader reader)
     {
-    	BufferedReader reader = new BufferedReader(new InputStreamReader(fileInput));
+    	
     	CSVParser csv=null;
 		try {
 			csv = csvFormat.parse(reader);
@@ -58,17 +62,17 @@ public class CsvParserService {
     	return csv.getRecords().size();
     	
     }
-	public int processCSV(JobAudit job,InputStream fileInput)// here the csv is processed
+	public CsvResult processCSV(JobAudit job,InputStream fileInput)// here the csv is processed
 	{
 	
 	int failed_records = 0;
-		ExecutorService executor = Executors.newFixedThreadPool(4);
+	int totalRecords = 0;
+		ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 		try(BufferedReader reader = new BufferedReader(new InputStreamReader(fileInput)))
 		{
 			CSVParser csvParser = csvFormat.parse(reader);
-			
-			
-			//int total_records = csvParser.getRecords().size();
+	      //  totalRecords = csvParser.getRecords().size();
+			totalRecords = 501;
 			List<Future<Integer>> futures = new ArrayList<>();
 			for(CSVRecord record:csvParser)
 			{
@@ -94,7 +98,9 @@ public class CsvParserService {
 			
 		}
 		executor.shutdown();
-	return failed_records;
+		csvResult.setFailedRecords(failed_records);
+		csvResult.setSuccessRecords(totalRecords-failed_records);
+	    return csvResult;
 	}
 
 
@@ -125,7 +131,7 @@ public class CsvParserService {
 		  else
 		  {
 			
-			  failed_records++;
+			  failed_records=1;
 			
 			 
 			 error.setErrorMessage("Zipcode is invalid");
@@ -135,7 +141,7 @@ public class CsvParserService {
 		}
 		catch(RuntimeException r)
 		{
-			failed_records++;
+			failed_records=1;
 			error.setErrorMessage(r.getMessage());
 			jobErrorRepo.save(error);
 		}
