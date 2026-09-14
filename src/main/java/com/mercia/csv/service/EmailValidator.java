@@ -5,8 +5,6 @@ import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
 
-import com.mercia.csv.entities.UserRecord;
-
 @Component
 public class EmailValidator implements UserRecordValidationRule{
 

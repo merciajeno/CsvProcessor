@@ -1,7 +1,6 @@
 package com.mercia.csv.entities;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 

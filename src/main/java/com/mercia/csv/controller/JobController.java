@@ -3,7 +3,6 @@ package com.mercia.csv.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,8 +22,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name="CSV Processor")
 public class JobController {
 
-	@Autowired
-	private JobRepository jobRepo;
+	private final JobRepository jobRepo;
+
+	JobController(JobRepository jobRepo) {
+		this.jobRepo = jobRepo;
+	}
 	
 	@GetMapping("/{jobId}")
 	public List<JobError> getAudits(@PathVariable Long jobId)
