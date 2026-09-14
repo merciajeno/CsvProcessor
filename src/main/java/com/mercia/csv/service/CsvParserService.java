@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -37,6 +38,7 @@ public class CsvParserService {
 	private final CSVFormat csvFormat;
 	
 	private final CsvResult csvResult;
+	AtomicInteger totalRecords = new AtomicInteger(0);
 	
 	public CsvParserService(JobErrorRepository jobErrorRepo, UserRecordValidator validator, AddressService addressService, UserService userService, CSVFormat csvFormat, CsvResult csvResult) {
 		this.jobErrorRepo = jobErrorRepo;
@@ -49,30 +51,14 @@ public class CsvParserService {
 		// TODO Auto-generated constructor stub
 	}
 	
-    public int totalRecords(BufferedReader reader)
-    {
-    	
-    	CSVParser csv=null;
-		try {
-			csv = csvFormat.parse(reader);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	return csv.getRecords().size();
-    	
-    }
 	public CsvResult processCSV(JobAudit job,InputStream fileInput)// here the csv is processed
 	{
 	
 	int failed_records = 0;
-	int totalRecords = 0;
 		ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 		try(BufferedReader reader = new BufferedReader(new InputStreamReader(fileInput)))
 		{
 			CSVParser csvParser = csvFormat.parse(reader);
-	      //  totalRecords = csvParser.getRecords().size();
-			totalRecords = 501;
 			List<Future<Integer>> futures = new ArrayList<>();
 			for(CSVRecord record:csvParser)
 			{
@@ -99,12 +85,13 @@ public class CsvParserService {
 		}
 		executor.shutdown();
 		csvResult.setFailedRecords(failed_records);
-		csvResult.setSuccessRecords(totalRecords-failed_records);
+		csvResult.setSuccessRecords(totalRecords.intValue()-failed_records);
 	    return csvResult;
 	}
 
 
 	private int processCSVRecord(JobAudit job,CSVRecord record) {
+		 totalRecords.addAndGet(1);
 		int failed_records=0;
 		String zipcode = record.get("zipcode");//important field
 		String email = record.get("email");// important field
@@ -121,6 +108,7 @@ public class CsvParserService {
 		}
 		  if(validator.isValidZipcode(zipcode))
 		  {
+			 
 			  Address address = addressService.getAddress(zipcode);
 			
 			 

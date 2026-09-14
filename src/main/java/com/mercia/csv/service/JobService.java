@@ -17,14 +17,12 @@ import com.mercia.csv.repository.JobRepository;
 @Service
 public class JobService {
 
-	private final CsvFileValidator csvFileValidator;
 	private final JobRepository jobRepository;
 	private final CsvParserService csvParserService;
 
     public JobService(JobRepository jobRepository,CsvParserService csvParserService, CsvFileValidator csvFileValidator) {
         this.jobRepository = jobRepository;
         this.csvParserService = csvParserService;
-		this.csvFileValidator = csvFileValidator;
     }
      public JobAudit createJob()
      {
