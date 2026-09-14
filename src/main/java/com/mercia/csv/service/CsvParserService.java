@@ -68,17 +68,19 @@ public class CsvParserService {
 			}
 			for (Future<Integer> future : futures) {
 			    try {
+			    	
 					failed_records += future.get();
+					
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ExecutionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					
+					System.out.println(e.getMessage());				
+					} catch (ExecutionException e) {
+					
+					System.out.println(e.getMessage());
 				}
 			}
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+			
 			e1.printStackTrace();
 			System.out.println(e1.getMessage());
 			
@@ -90,15 +92,16 @@ public class CsvParserService {
 	}
 
 
+	// if failed,returns 1 else 0
 	private int processCSVRecord(JobAudit job,CSVRecord record) {
 		 totalRecords.addAndGet(1);
-		int failed_records=0;
 		String zipcode = record.get("zipcode");//important field
 		String email = record.get("email");// important field
-		//System.out.println(zipcode);
+		
 
 		 JobError error = new JobError();
 		 error.setJobAudit(job);
+		 
 		 error.setRowNumber(record.getRecordNumber());
 		try
 		{
@@ -119,20 +122,19 @@ public class CsvParserService {
 		  else
 		  {
 			
-			  failed_records=1;
-			
-			 
 			 error.setErrorMessage("Zipcode is invalid");
 			 jobErrorRepo.save(error);
-			 
+			 System.out.println("Invalid zipcode");
+			 return 1;
 		  }
 		}
 		catch(RuntimeException r)
 		{
-			failed_records=1;
 			error.setErrorMessage(r.getMessage());
 			jobErrorRepo.save(error);
+			System.out.println(r.getMessage());
+			return 1;
 		}
-		  return failed_records;
+		  return 0;
 	}
 }

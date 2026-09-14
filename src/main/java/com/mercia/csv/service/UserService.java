@@ -47,7 +47,7 @@ public class UserService {
             {
             userRepo.save(user);
             }
-            catch(DataIntegrityViolationException e)
+            catch(DataIntegrityViolationException e)//suppose two threads create same records
             {
             	System.out.println(e.getMessage());
             }
