@@ -3,6 +3,7 @@ package com.mercia.csv.service;
 import java.util.Optional;
 
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.mercia.csv.entities.Address;
@@ -42,7 +43,15 @@ public class UserService {
             user.setAddress(address);
             user.setJobAudit(job);
 
+            try
+            {
             userRepo.save(user);
+            }
+            catch(DataIntegrityViolationException e)
+            {
+            	System.out.println(e.getMessage());
+            }
+            
         }
         else
         {

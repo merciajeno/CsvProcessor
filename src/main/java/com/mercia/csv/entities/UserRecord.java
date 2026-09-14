@@ -2,6 +2,7 @@ package com.mercia.csv.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -38,6 +39,7 @@ public class UserRecord {
 	    private String phone1;
 	    private String phone2;
 
+	    @Column(nullable = false, unique = true)
 	    private String email;
 	    private String web;
 
