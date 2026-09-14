@@ -1,4 +1,4 @@
-# Setup & Installation
+# Setup and Installation
 
 Follow the steps below to set up and run the application locally.
 
@@ -20,13 +20,13 @@ spring.datasource.username=<your-postgresql-username>
 spring.datasource.password=<your-postgresql-password>
 ```
 
-Make sure PostgreSQL is running locally and that the specified database exists.
+Ensure that PostgreSQL is running locally and that the specified database exists.
 
 ## 3. Run the Application
 
-Start the application using your preferred IDE or build tool.
+Start the application using your preferred IDE. 
 
-Once the application is running, it will be available at:
+Once the application is running, it will be accessible at:
 
 ```text
 http://localhost:8080
@@ -34,10 +34,10 @@ http://localhost:8080
 
 ## 4. API Documentation
 
-The project includes interactive API documentation using Swagger/OpenAPI.
+The project includes interactive API documentation utilizing Swagger/OpenAPI.
 
 After starting the application, open:
 
 `http://localhost:8080/api-docs.html`
 
-You can use the documentation to explore the available APIs and test endpoints directly. I recommend to use Postman for api testing.
+You can use the documentation to explore the available APIs and test endpoints directly. For API testing, I recommend Postman, since Swagger doesn't support multipart file input.
