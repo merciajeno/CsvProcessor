@@ -41,24 +41,11 @@ public class UploadController {
 		
 		JobAudit job = jobService.createJob();
 		try
-		{
-//		
-			// if no file is uploaded
-//		if(file.isEmpty()) throw new RuntimeException("File not found");
-//		//System.out.println(file.getContentType());
-//		
-//		//if file is in csv
-//		if(!file.getContentType().equals("text/csv")) throw new RuntimeException("Not in csv format");
+		{ 
+			// file validation
 			if (!csvFileValidator.isValid(file))
 			   throw new RuntimeException("Invalid csv file");
 		
-//		try {
-//			System.out.println("File input");
-//			csvParserService.processCSV( file.getInputStream());
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		}
 		catch(RuntimeException e)
 		{

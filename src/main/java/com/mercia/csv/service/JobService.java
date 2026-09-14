@@ -1,6 +1,5 @@
 package com.mercia.csv.service;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -32,6 +31,7 @@ public class JobService {
     	 JobAudit job = new JobAudit();
     	 job.setStatus(StatusEnum.IN_PROGRESS);
     	 job.setCreatedAt(LocalDateTime.now());
+    	 
     	 jobRepository.save(job);
     	
     	 return job;
@@ -45,7 +45,7 @@ public class JobService {
     	 try {
     		
     			 int failed_records = csvParserService.processCSV(job, file.getInputStream());
-    			
+
     			job.setFile_name(file.getOriginalFilename());
     			job.setEndedAt(LocalDateTime.now());
     			job.setStatus(StatusEnum.SUCCCESS);

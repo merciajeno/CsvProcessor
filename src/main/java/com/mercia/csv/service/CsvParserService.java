@@ -1,10 +1,5 @@
 package com.mercia.csv.service;
 
-import com.mercia.csv.entities.Address;
-import com.mercia.csv.entities.JobAudit;
-import com.mercia.csv.entities.JobError;
-import com.mercia.csv.repository.JobErrorRepository;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,18 +17,15 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.mercia.csv.entities.Address;
+import com.mercia.csv.entities.JobAudit;
+import com.mercia.csv.entities.JobError;
+import com.mercia.csv.repository.JobErrorRepository;
+
 @Service
 public class CsvParserService {
 
-//	@Autowired
-//	private ZipEnrichmentService zipService;
-//	
-//	@Autowired
-//	private UserRepository userRepo;
-//	
-//	@Autowired
-//	private AddressRepository addressRepo;
-//	
+	
 	private final JobErrorRepository jobErrorRepo;
 	
 	private final UserService userService;
@@ -53,24 +45,25 @@ public class CsvParserService {
 		
 		// TODO Auto-generated constructor stub
 	}
-	//email regex
-//	private static final String EMAIL_REGEX = 
-//	        "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-//	 private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
-//	 
-//	 public static boolean isValidEmail(String email) {
-//	        if (email == null) {
-//	            return false;
-//	        }
-//	        Matcher matcher = EMAIL_PATTERN.matcher(email);
-//	        return matcher.matches();
-//	    }
-//
-//	 public static boolean isValidZipcode(String zipcode)
-//	 {
-//		 if(zipcode.length()!=5)return false;
-//		 return zipcode.matches("[0-9]+");
-//	 }
+	
+	
+	public int  getTotalRecords(InputStream file)
+	{
+		BufferedReader reader = new BufferedReader(new InputStreamReader(file));
+		try {
+			CSVParser csvParser = csvFormat.parse(reader);
+			int total = 0;
+			for (CSVRecord record : csvParser) {
+                total++;
+            }
+			return total;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
+			
+		}
+		return 0;
+	}
 	public int processCSV(JobAudit job,InputStream fileInput)// here the csv is processed
 	{
 	
@@ -78,24 +71,8 @@ public class CsvParserService {
 		ExecutorService executor = Executors.newFixedThreadPool(4);
 		try(BufferedReader reader = new BufferedReader(new InputStreamReader(fileInput)))
 		{
-//			String line;
-//			try {
-//				reader.readLine();//to skip header
-//				while ((line = reader.readLine()) != null) {
-//				    System.out.println("Line: " + line);
-//				    
-//				}
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			CSVParser csvParser = CSVFormat.DEFAULT
-//		    		.builder()
-//		    		.setHeader()
-//		    		.get()
-//		    		.parse(reader);
 			CSVParser csvParser = csvFormat.parse(reader);
-			int count = 0;
+			
 			
 			//int total_records = csvParser.getRecords().size();
 			List<Future<Integer>> futures = new ArrayList<>();
@@ -143,32 +120,9 @@ public class CsvParserService {
 			throw new RuntimeException("Not a valid email");
 		}
 		  if(validator.isValidZipcode(zipcode))
-		  {// for US zipcode
-//			zipService.zipDetails(zipcode);
-//			Address address = addressRepo.findById(zipcode)
-//			        .orElseThrow(() ->
-//			                new RuntimeException("Address not found: " + zipcode)
-//			        );
+		  {
 			  Address address = addressService.getAddress(zipcode);
 			
-//			Optional<UserRecord> existingUser = userRepo.findByEmail(email);
-//			if(existingUser.isEmpty())
-//			{
-//			    UserRecord user = new UserRecord(
-//			            record.get("firstName"),
-//			            record.get("lastName"),
-//			            record.get("phone1"),
-//			            record.get("phone2"),
-//			            record.get("email"),
-//			            record.get("web"));
-//			    
-//
-//			    user.setAddress(address);
-//			    user.setJobAudit(job);
-//		       // address.addUser(user);
-//			    
-//			    userRepo.save(user);
-//			}
 			 
 			  userService.createIfNotExists(email, record, address, job);
 			}
