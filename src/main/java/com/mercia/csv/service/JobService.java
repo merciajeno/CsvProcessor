@@ -3,7 +3,6 @@ package com.mercia.csv.service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,11 +15,8 @@ import com.mercia.csv.repository.JobRepository;
 @Service
 public class JobService {
 
-	@Autowired
 	private final JobRepository jobRepository;
-	
-	@Autowired
-	private CsvParserService csvParserService;
+	private final CsvParserService csvParserService;
 
     public JobService(JobRepository jobRepository,CsvParserService csvParserService) {
         this.jobRepository = jobRepository;
@@ -41,11 +37,10 @@ public class JobService {
      public void processJob(MultipartFile file,Long jobId)
      {
     	 JobAudit job = jobRepository.findById(jobId).orElseThrow();
-    //	 System.out.println(job.getId());
     	 try {
     		
     			 int failed_records = csvParserService.processCSV(job, file.getInputStream());
-
+//                int totalRecords = csvParserService.totalRecords(file.getInputStream());
     			job.setFile_name(file.getOriginalFilename());
     			job.setEndedAt(LocalDateTime.now());
     			job.setStatus(StatusEnum.SUCCCESS);

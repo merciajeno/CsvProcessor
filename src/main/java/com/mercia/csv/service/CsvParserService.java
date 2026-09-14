@@ -14,7 +14,6 @@ import java.util.concurrent.Future;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mercia.csv.entities.Address;
@@ -34,36 +33,31 @@ public class CsvParserService {
 	
 	private final UserRecordValidator validator;
 	
-	@Autowired
-	private CSVFormat csvFormat;
+	private final CSVFormat csvFormat;
 	
-	public CsvParserService(JobErrorRepository jobErrorRepo, UserRecordValidator validator, AddressService addressService,UserService userService) {
+	public CsvParserService(JobErrorRepository jobErrorRepo, UserRecordValidator validator, AddressService addressService, UserService userService, CSVFormat csvFormat) {
 		this.jobErrorRepo = jobErrorRepo;
 		this.userService = userService;
 		this.validator = validator;
 		this.addressService = addressService;
+		this.csvFormat = csvFormat;
 		
 		// TODO Auto-generated constructor stub
 	}
 	
-	
-	public int  getTotalRecords(InputStream file)
-	{
-		BufferedReader reader = new BufferedReader(new InputStreamReader(file));
+    public int totalRecords(InputStream fileInput)
+    {
+    	BufferedReader reader = new BufferedReader(new InputStreamReader(fileInput));
+    	CSVParser csv=null;
 		try {
-			CSVParser csvParser = csvFormat.parse(reader);
-			int total = 0;
-			for (CSVRecord record : csvParser) {
-                total++;
-            }
-			return total;
+			csv = csvFormat.parse(reader);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			System.out.println(e.getMessage());
-			
+			e.printStackTrace();
 		}
-		return 0;
-	}
+    	return csv.getRecords().size();
+    	
+    }
 	public int processCSV(JobAudit job,InputStream fileInput)// here the csv is processed
 	{
 	
@@ -99,7 +93,7 @@ public class CsvParserService {
 			System.out.println(e1.getMessage());
 			
 		}
-		
+		executor.shutdown();
 	return failed_records;
 	}
 
