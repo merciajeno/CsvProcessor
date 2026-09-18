@@ -26,115 +26,130 @@ import com.mercia.csv.repository.JobErrorRepository;
 @Service
 public class CsvParserService {
 
-	
 	private final JobErrorRepository jobErrorRepo;
-	
+
 	private final UserService userService;
-	
+
 	private final AddressService addressService;
-	
+
 	private final UserRecordValidator validator;
-	
+
 	private final CSVFormat csvFormat;
-	
+
 	private final CsvResult csvResult;
-	AtomicInteger totalRecords = new AtomicInteger(0);
-	
-	public CsvParserService(JobErrorRepository jobErrorRepo, UserRecordValidator validator, AddressService addressService, UserService userService, CSVFormat csvFormat, CsvResult csvResult) {
+
+	public CsvParserService(JobErrorRepository jobErrorRepo, UserRecordValidator validator,
+			AddressService addressService, UserService userService, CSVFormat csvFormat, CsvResult csvResult) {
 		this.jobErrorRepo = jobErrorRepo;
 		this.userService = userService;
 		this.validator = validator;
 		this.addressService = addressService;
 		this.csvFormat = csvFormat;
 		this.csvResult = csvResult;
-		
+
 		// TODO Auto-generated constructor stub
 	}
-	
-	public CsvResult processCSV(JobAudit job,InputStream fileInput)// here the csv is processed
-	{
-	
-	int failed_records = 0;
+
+	public CsvResult processCSV(JobAudit job, InputStream fileInput) {
+
+		AtomicInteger totalRecords = new AtomicInteger(0);
+		int failed_records = 0;
+
+		int BATCH_SIZE = 500;
+
 		ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
-		try(BufferedReader reader = new BufferedReader(new InputStreamReader(fileInput)))
-		{
+
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(fileInput))) {
+
 			CSVParser csvParser = csvFormat.parse(reader);
+
 			List<Future<Integer>> futures = new ArrayList<>();
-			for(CSVRecord record:csvParser)
-			{
-				
-				futures.add(executor.submit(() -> processCSVRecord(job, record)));
-			   
+
+			for (CSVRecord record : csvParser) {
+
+				futures.add(executor.submit(() -> processCSVRecord(job, record, totalRecords)));
+
+				// Batch is full
+				if (futures.size() == BATCH_SIZE) {
+
+					for (Future<Integer> future : futures) {
+						try {
+							failed_records += future.get();
+
+						} catch (InterruptedException e) {
+							System.out.println(e.getMessage());
+
+						} catch (ExecutionException e) {
+							System.out.println(e.getMessage());
+						}
+					}
+
+					// Remove completed batch
+					futures.clear();
+				}
 			}
+
+			// Process remaining records
 			for (Future<Integer> future : futures) {
-			    try {
-			    	
+				try {
 					failed_records += future.get();
-					
+
 				} catch (InterruptedException e) {
-					
-					System.out.println(e.getMessage());				
-					} catch (ExecutionException e) {
-					
+					System.out.println(e.getMessage());
+
+				} catch (ExecutionException e) {
 					System.out.println(e.getMessage());
 				}
 			}
+
 		} catch (IOException e1) {
-			
 			e1.printStackTrace();
 			System.out.println(e1.getMessage());
-			
 		}
+
 		executor.shutdown();
+
 		csvResult.setFailedRecords(failed_records);
-		csvResult.setSuccessRecords(totalRecords.intValue()-failed_records);
-	    return csvResult;
+		csvResult.setSuccessRecords(totalRecords.intValue() - failed_records);
+
+		return csvResult;
 	}
 
-
 	// if failed,returns 1 else 0
-	private int processCSVRecord(JobAudit job,CSVRecord record) {
-		 totalRecords.addAndGet(1);
-		String zipcode = record.get("zipcode");//important field
-		String email = record.get("email");// important field
-		
+	private int processCSVRecord(JobAudit job, CSVRecord record, AtomicInteger totalRecords) {
 
-		 JobError error = new JobError();
-		 error.setJobAudit(job);
-		 
-		 error.setRowNumber(record.getRecordNumber());
-		try
-		{
-		if(!validator.isValidEmail(email))
-		{
-			throw new RuntimeException("Not a valid email");
-		}
-		  if(validator.isValidZipcode(zipcode))
-		  {
-			 
-			  Address address = addressService.getAddress(zipcode);
-			
-			 
-			  userService.createIfNotExists(email, record, address, job);
+		totalRecords.addAndGet(1);
+		String zipcode = record.get("zipcode");// important field
+		String email = record.get("email");// important field
+
+		JobError error = new JobError();
+		error.setJobAudit(job);
+
+		error.setRowNumber(record.getRecordNumber());
+		try {
+			if (!validator.isValidEmail(email)) {
+				throw new RuntimeException("Not a valid email");
 			}
-			
-		
-		  else
-		  {
-			
-			 error.setErrorMessage("Zipcode is invalid");
-			 jobErrorRepo.save(error);
-			 System.out.println("Invalid zipcode");
-			 return 1;
-		  }
-		}
-		catch(RuntimeException r)
-		{
+			if (validator.isValidZipcode(zipcode)) {
+
+				Address address = addressService.getAddress(zipcode);
+
+				userService.createIfNotExists(email, record, address, job);
+			}
+
+			else {
+
+				error.setErrorMessage("Zipcode is invalid");
+				jobErrorRepo.save(error);
+				System.out.println("Invalid zipcode");
+				return 1;
+			}
+		} catch (RuntimeException r) {
 			error.setErrorMessage(r.getMessage());
 			jobErrorRepo.save(error);
 			System.out.println(r.getMessage());
 			return 1;
 		}
-		  return 0;
+		return 0;
 	}
 }
